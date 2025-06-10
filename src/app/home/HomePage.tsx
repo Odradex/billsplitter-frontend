@@ -37,7 +37,7 @@ export function HomePage() {
         </div>
       </div>
 
-      <MainButton>
+      <MainButton linkTo="/meet/new">
         <Plus className="!size-7"/>
         Новый мит
       </MainButton>
