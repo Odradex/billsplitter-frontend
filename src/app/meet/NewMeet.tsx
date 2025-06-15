@@ -1,6 +1,6 @@
 import Header from "@/components/Header";
 import { MainButton } from "@/components/MainButton";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Trash2 } from "lucide-react";
 import { Link } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 
 // Schema without members
 const MeetSchema = z.object({
@@ -43,6 +45,24 @@ export function NewMeet() {
     },
   });
 
+  function addMember(member: string) {
+    const currentMembers = form.getValues("members");
+    if (!currentMembers.includes(member)) {
+      form.setValue("members", [member, ...currentMembers]);
+    } else {
+      form.setError("members", {
+        type: "manual",
+        message: "Этот участник уже добавлен",
+      });
+    }
+  }
+
+  function removeMember(index: number) {
+    const currentMembers = form.getValues("members");
+    const updatedMembers = currentMembers.filter((_, i) => i !== index);
+    form.setValue("members", updatedMembers);
+  }
+
   function onSubmit(values: MeetFormData) {
     alert(JSON.stringify(values, null, 2));
   }
@@ -59,7 +79,7 @@ export function NewMeet() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="mt-16 p-4 space-y-4"
+          className="mt-16 mb-24 p-4 space-y-4"
         >
           <h2 className="text-2xl text-center mb-4">Информация</h2>
           <Card className="p-4 bg-secondary shadow-md">
@@ -109,13 +129,18 @@ export function NewMeet() {
             <FormField
               control={form.control}
               name="members"
-              render={({ field }) => (
+              render={() => (
                 <FormItem>
                   <FormControl>
                     <Input
-                      {...field}
                       placeholder="Добавь участников"
-                      
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && e.currentTarget.value.trim()) {
+                          e.preventDefault();
+                          addMember(e.currentTarget.value.trim());
+                          e.currentTarget.value = ""; // Clear input after adding
+                        }
+                      }}
                     />
                   </FormControl>
                   <FormDescription>
@@ -125,6 +150,26 @@ export function NewMeet() {
                 </FormItem>
               )}
             />
+            {form.watch("members").length > 0 && (
+              <>
+                <Separator />
+                <div className="space-y-2">
+                  {form.watch("members").map((member, index) => (
+                    <div className="flex justify-between items-center p-2 rounded-lg border bg-white">
+                      <span>{member}</span>
+                      <Button
+                        type="button"
+                        onClick={() => removeMember(index)}
+                        variant="outline"
+                      >
+                        <Trash2/>
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )
+            }
           </Card>
           <MainButton type="submit">Готово</MainButton>
         </form>
