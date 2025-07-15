@@ -1,5 +1,6 @@
 import { MainButton } from "@/components/MainButton"
 import { Button } from "@/components/ui/button"
+import { useSession } from "@/contexts/SessionContext";
 import { Plus } from "lucide-react"
 import { BanknoteArrowUp, BellRing } from 'lucide-react';
 
@@ -7,6 +8,9 @@ export function HomePage() {
   const meets = ["Зоопарк", "Покер", "Кино", "Боулинг", "Кафе", "Пицца"
   , "Квест", "Бильярд", "Картинг", "Пейнтбол", "Дартс", "Теннис", "Бассейн"]
 
+  console.log(meets);
+  const session = useSession();
+  console.log(session);
   return (
     <div className=" max-w-sm mx-auto space-y-4 mt-4">
       <h1 className="text-3xl font-bold">Билсплиттер</h1>

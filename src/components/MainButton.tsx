@@ -9,7 +9,7 @@ type MainButtonProps = React.ComponentProps<typeof Button> & {
 
 export function MainButton({ children, linkTo, ...props }: MainButtonProps) {
   const button = (
-    <Button className="w-full h-16 font-bold text-xl" {...props}>
+    <Button className="w-full h-14 font-bold text-xl" {...props}>
       {children}
     </Button>
   );
