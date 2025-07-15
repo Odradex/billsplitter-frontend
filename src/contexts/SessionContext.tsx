@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { useLaunchParams } from '@telegram-apps/sdk-react';
+import { useLaunchParams as realUseLaunchParams } from '@telegram-apps/sdk-react';
 import { Api } from '@/api';
 
 export type Session = {
@@ -7,12 +7,12 @@ export type Session = {
   sessionId?: string | null;
   error?: string | null;
   isGuest?: boolean;
-}
+};
 
 export type SessionContextType = {
   session: Session;
   setSession: (session: Session) => void;
-}
+};
 
 const SessionContext = createContext<SessionContextType>({
   session: { telegramUser: null, sessionId: null, error: null, isGuest: false },
@@ -21,11 +21,30 @@ const SessionContext = createContext<SessionContextType>({
 
 export const SessionProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session>({});
-  const launchParams = useLaunchParams();
+  const [launchParams, setLaunchParams] = useState<unknown | null>(null);
+
+  // Wrap useLaunchParams in try/catch safely
+  useEffect(() => {
+    try {
+      const params = realUseLaunchParams();
+      setLaunchParams(params);
+    } catch (e) {
+      console.warn('[Telegram SDK] Failed to get launch params:', e);
+      setLaunchParams(null);
+    }
+  }, []);
 
   useEffect(() => {
     async function fetchSession() {
-      const telegramUser = launchParams.tgWebAppData?.user || null;
+      const telegramUser =
+        launchParams?.tgWebAppData?.user ??
+        (import.meta.env.DEV
+          ? {
+              id: 123456,
+              first_name: 'Dev',
+              username: 'dev_user',
+            }
+          : null);
 
       if (!telegramUser) {
         // Fallback: guest session
@@ -49,6 +68,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
         setSession({ telegramUser, sessionId: null, error: 'Failed to get session', isGuest: false });
       }
     }
+
     fetchSession();
   }, [launchParams]);
 
@@ -57,7 +77,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </SessionContext.Provider>
   );
-}
+};
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const useSession = () => {
@@ -66,4 +86,4 @@ export const useSession = () => {
     throw new Error('useSession must be used within a SessionProvider');
   }
   return sessionContext;
-}
+};
