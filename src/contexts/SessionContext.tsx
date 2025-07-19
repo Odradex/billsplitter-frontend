@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { useLaunchParams as realUseLaunchParams, type LaunchParams } from '@telegram-apps/sdk-react';
+import { createContext, useContext, type ReactNode } from 'react';
+import { useLaunchParams as realUseLaunchParams } from '@telegram-apps/sdk-react';
 import { getSession } from '@/api/session';
 import { useQuery } from '@tanstack/react-query';
 
@@ -19,18 +19,7 @@ const SessionContext = createContext<SessionContextType>({
 });
 
 export const SessionProvider = ({ children }: { children: ReactNode }) => {
-  const [launchParams, setLaunchParams] = useState<LaunchParams | null>(null);
-
-  // Wrap useLaunchParams in try/catch safely
-  useEffect(() => {
-    try {
-      const params = realUseLaunchParams();
-      setLaunchParams(params);
-    } catch (e) {
-      console.warn('[Telegram SDK] Failed to get launch params:', e);
-      setLaunchParams(null);
-    }
-  }, []);
+  const launchParams = realUseLaunchParams();
 
   const telegramUser = launchParams?.tgWebAppData?.user ??
     (import.meta.env.DEV ? {
