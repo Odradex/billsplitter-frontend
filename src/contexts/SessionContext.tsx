@@ -1,6 +1,7 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useContext, type ReactNode } from 'react';
 import { useLaunchParams as realUseLaunchParams } from '@telegram-apps/sdk-react';
-import { Api } from '@/api';
+import { getSession } from '@/api/session';
+import { useQuery } from '@tanstack/react-query';
 
 export type Session = {
   telegramUser?: object | null;
@@ -11,69 +12,67 @@ export type Session = {
 
 export type SessionContextType = {
   session: Session;
-  setSession: (session: Session) => void;
 };
 
 const SessionContext = createContext<SessionContextType>({
   session: { telegramUser: null, sessionId: null, error: null, isGuest: false },
-  setSession: () => {},
 });
 
 export const SessionProvider = ({ children }: { children: ReactNode }) => {
-  const [session, setSession] = useState<Session>({});
-  const [launchParams, setLaunchParams] = useState<unknown | null>(null);
+  const launchParams = realUseLaunchParams();
 
-  // Wrap useLaunchParams in try/catch safely
-  useEffect(() => {
-    try {
-      const params = realUseLaunchParams();
-      setLaunchParams(params);
-    } catch (e) {
-      console.warn('[Telegram SDK] Failed to get launch params:', e);
-      setLaunchParams(null);
-    }
-  }, []);
+  const telegramUser = launchParams?.tgWebAppData?.user ??
+    (import.meta.env.DEV ? {
+      id: 123456,
+      first_name: 'Dev',
+      username: 'dev_user',
+    } : null);
 
-  useEffect(() => {
-    async function fetchSession() {
-      const telegramUser =
-        launchParams?.tgWebAppData?.user ??
-        (import.meta.env.DEV
-          ? {
-              id: 123456,
-              first_name: 'Dev',
-              username: 'dev_user',
-            }
-          : null);
+  // Fallback: guest session
+  const defaultSession: Session = {
+    telegramUser: null,
+    sessionId: null,
+    error: null,
+    isGuest: true
+  };
 
+  const { data: session = defaultSession } = useQuery({
+    queryKey: ['session', telegramUser, launchParams],
+    queryFn: async (): Promise<Session> => {
       if (!telegramUser) {
-        // Fallback: guest session
-        setSession({
-          telegramUser: null,
-          sessionId: null,
-          error: null,
-          isGuest: true,
-        });
-        return;
+        return defaultSession;
       }
 
       try {
-        const result = await Api.getSession(telegramUser);
+        const result = await getSession(telegramUser);
         if (result?.error) {
-          setSession({ telegramUser, sessionId: null, error: result.error, isGuest: false });
-        } else {
-          setSession({ telegramUser, sessionId: result, error: null, isGuest: false });
+          return {
+            telegramUser,
+            sessionId: null,
+            error: result.error,
+            isGuest: false
+          };
         }
+        return {
+          telegramUser,
+          sessionId: result,
+          error: null,
+          isGuest: false
+        };
       } catch {
-        setSession({ telegramUser, sessionId: null, error: 'Failed to get session', isGuest: false });
+        return {
+          telegramUser,
+          sessionId: null,
+          error: 'Failed to get session',
+          isGuest: false
+        };
       }
-    }
-
-    fetchSession();
-  }, [launchParams]);
+    },
+    enabled: !!launchParams,
+  });
 
   return (
-    <SessionContext.Provider value={{ session, setSession }}>
+    <SessionContext.Provider value={{ session }}>
       {children}
     </SessionContext.Provider>
   );
