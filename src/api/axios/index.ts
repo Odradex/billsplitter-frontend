@@ -40,9 +40,4 @@ instance.interceptors.response.use(
   }
 )
 
-instance.interceptors.request.use(config => {
-  console.log('Making request to:', config.baseURL, config.url);
-  return config;
-});
-
 export default instance
