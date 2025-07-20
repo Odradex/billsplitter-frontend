@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { useSession } from "@/contexts/SessionContext";
 import { Plus } from "lucide-react"
 import { BanknoteArrowUp, BellRing } from 'lucide-react';
+import SettingsBanner from "../profileSettings/settingsBanner";
 
 export function HomePage() {
   const meets = ["Зоопарк", "Покер", "Кино", "Боулинг", "Кафе", "Пицца"
@@ -16,14 +17,7 @@ export function HomePage() {
       <h1 className="text-3xl font-bold">Билсплиттер</h1>
 
       <div className="flex gap-4 h-24">
-        <Button className="flex-1 flex flex-col items-center h-full" variant="secondary" onClick={() => alert('Функция в разработке')}>
-          <BellRing className="!size-10" strokeWidth={1.5} />
-          <span>Уведомления</span>
-        </Button>
-        <Button className="flex-1 flex flex-col items-center h-full" variant="secondary">
-          <BanknoteArrowUp className="!size-10" strokeWidth={1.5} />
-          <span>Способы оплаты</span>
-        </Button>
+       <SettingsBanner userName={'Шальной моряк'} />
       </div>
 
       <div>
