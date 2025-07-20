@@ -1,11 +1,12 @@
-import { createContext, useContext, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, type ReactNode } from 'react';
 import { useLaunchParams as realUseLaunchParams } from '@telegram-apps/sdk-react';
 import { getSession } from '@/api/session';
 import { useQuery } from '@tanstack/react-query';
+import { setAxiosHeaders } from '@/api/axios';
 
 export type Session = {
   telegramUser?: object | null;
-  sessionId?: string | null;
+  sessionID?: string | null;
   error?: string | null;
   isGuest?: boolean;
 };
@@ -15,7 +16,7 @@ export type SessionContextType = {
 };
 
 const SessionContext = createContext<SessionContextType>({
-  session: { telegramUser: null, sessionId: null, error: null, isGuest: false },
+  session: { telegramUser: null, sessionID: null, error: null, isGuest: false },
 });
 
 export const SessionProvider = ({ children }: { children: ReactNode }) => {
@@ -31,7 +32,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
   // Fallback: guest session
   const defaultSession: Session = {
     telegramUser: null,
-    sessionId: null,
+    sessionID: null,
     error: null,
     isGuest: true
   };
@@ -48,28 +49,35 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
         if (result?.error) {
           return {
             telegramUser,
-            sessionId: null,
+            sessionID: null,
             error: result.error,
             isGuest: false
           };
         }
         return {
           telegramUser,
-          sessionId: result,
+          sessionID: result.sessionID,
           error: null,
           isGuest: false
         };
       } catch {
         return {
           telegramUser,
-          sessionId: null,
+          sessionID: null,
           error: 'Failed to get session',
           isGuest: false
         };
       }
     },
     enabled: !!launchParams,
+    refetchOnWindowFocus: false,
   });
+
+  useEffect(() => {
+    if (!session.sessionID) return;
+
+    setAxiosHeaders({ 'X-Session-ID': session.sessionID })
+  }, [session])
 
   return (
     <SessionContext.Provider value={{ session }}>
