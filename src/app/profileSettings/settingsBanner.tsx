@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router';
 import { Button } from "@/components/ui/button"
 import { User } from "lucide-react";
 
-const SettingsBanner = ({ userName }: { userName: string }) => {
+const SettingsBanner = ({ userName }: { userName?: string }) => {
   const navigate = useNavigate();
 
   return (
