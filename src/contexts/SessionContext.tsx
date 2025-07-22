@@ -1,75 +1,68 @@
 import { createContext, useContext, useEffect, type ReactNode } from 'react';
 import { useLaunchParams as realUseLaunchParams } from '@telegram-apps/sdk-react';
-import { getSession } from '@/api/session';
+import { getSession, type Session } from '@/api/session';
 import { useQuery } from '@tanstack/react-query';
 import { setAxiosHeaders } from '@/api/axios';
 
-export type Session = {
-  telegramUser?: object | null;
-  sessionID?: string | null;
-  error?: string | null;
+export type SessionType = Session & {
   isGuest?: boolean;
-};
+  error?: string | null;
+  telegramUser?: object | null;
+}
 
 export type SessionContextType = {
-  session: Session;
+  session: SessionType;
 };
 
-const SessionContext = createContext<SessionContextType>({
-  session: { telegramUser: null, sessionID: null, error: null, isGuest: false },
-});
+const SessionContext = createContext<SessionContextType | undefined>(undefined);
 
 export const SessionProvider = ({ children }: { children: ReactNode }) => {
   const launchParams = realUseLaunchParams();
 
   const telegramUser = launchParams?.tgWebAppData?.user ??
-    (import.meta.env.DEV ? {
+    (import.meta.env.VITE_MOCK_TG ? {
       id: 123456,
       first_name: 'Dev',
       username: 'dev_user',
     } : null);
 
   // Fallback: guest session
-  const defaultSession: Session = {
-    telegramUser: null,
-    sessionID: null,
-    error: null,
-    isGuest: true
-  };
+  const defaultSession: SessionType = {
+    UserInfo: {
+      ID: 'dev_id',
+      Username: 'DevUserName',
+      FirstName: 'DevFirstName',
+      LastName: 'DevLastName',
+      Extra: {
+        TelegramID: 123456,
+      }
+    },
+    telegramUser: telegramUser || null,
+    sessionID: 'dev_session_id'
+  }
 
   const { data: session = defaultSession } = useQuery({
-    queryKey: ['session', telegramUser, launchParams],
-    queryFn: async (): Promise<Session> => {
-      if (!telegramUser) {
-        return defaultSession;
-      }
-
+    queryKey: ['session', telegramUser],
+    queryFn: async (): Promise<SessionType> => {
       try {
         const result = await getSession(telegramUser);
-        if (result?.error) {
-          return {
-            telegramUser,
-            sessionID: null,
-            error: result.error,
-            isGuest: false
-          };
-        }
+
         return {
+          ...result,
           telegramUser,
-          sessionID: result.sessionID,
-          error: null,
           isGuest: false
         };
-      } catch {
+      } catch (e: any) {
         return {
+          ...defaultSession,
           telegramUser,
           sessionID: null,
-          error: 'Failed to get session',
+          error: e?.message || 'Failed to get session',
           isGuest: false
         };
       }
     },
-    enabled: !!launchParams,
+    enabled: !!launchParams && !import.meta.env.VITE_MOCK_TG,
     refetchOnWindowFocus: false,
   });
 
@@ -88,7 +81,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const useSession = () => {
-  const sessionContext = useContext(SessionContext).session;
+  const sessionContext = useContext(SessionContext);
   if (!sessionContext) {
     throw new Error('useSession must be used within a SessionProvider');
   }
