@@ -19,15 +19,14 @@ export const getSession = async (telegramUser: {
     id?: number | string;
     username?: string;
   } | null) : Promise<Session> => {
-    const payload = {
-      firstName: telegramUser?.first_name,
-      lastName: telegramUser?.last_name,
-      telegramID: telegramUser?.id,
-      username: telegramUser?.username
-    }
-
-    const response = await axios.post('/auth/login/telegram', payload)
-
-    return response.data;
+  const payload = {
+    firstName: telegramUser?.first_name,
+    lastName: telegramUser?.last_name,
+    telegramID: telegramUser?.id,
+    username: telegramUser?.username
   }
 
+  const response = await axios.post('/auth/login/telegram', payload)
+
+  return response.data;
+}

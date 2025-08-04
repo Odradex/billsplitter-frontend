@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/button"
 import { useSession } from "@/contexts/SessionContext";
 import { Plus } from "lucide-react"
 import SettingsBanner from "../profileSettings/settingsBanner";
+import { useNavigate } from "react-router";
 
 export function HomePage() {
+  const navigate = useNavigate();
   const meets = ["Зоопарк", "Покер", "Кино", "Боулинг", "Кафе", "Пицца"
   , "Квест", "Бильярд", "Картинг", "Пейнтбол", "Дартс", "Теннис", "Бассейн"]
 
@@ -27,6 +29,7 @@ export function HomePage() {
               key={meet}
               variant="outline"
               className="w-full h-14 justify-start font-medium"
+              onClick={() => navigate(`/meet/${1}`)}
             >
               {meet}
             </Button>
