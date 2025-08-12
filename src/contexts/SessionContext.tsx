@@ -29,7 +29,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
   // Fallback: guest session
   const defaultSession: SessionType = {
     UserInfo: {
-      ID: 'dev_id',
+      ID: '1',
       Username: 'DevUserName',
       FirstName: 'DevFirstName',
       LastName: 'DevLastName',
@@ -38,7 +38,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
       }
     },
     telegramUser: telegramUser || null,
-    sessionID: 'dev_session_id'
+    sessionID: '0c8023a2-0fca-426c-ab61-3ee72e30de60'
   }
 
   const { data: session = defaultSession } = useQuery({
