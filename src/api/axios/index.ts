@@ -13,6 +13,18 @@ const instance = axios.create({
 
 export const AXIOS_REQUEST_RETRIES = 3
 
+instance.interceptors.request.use(
+  (config) => {
+    // Check for X-Session-ID in headers
+    if (!config.headers['X-Session-ID']) {
+      // Optionally, you can throw a custom error
+      return Promise.reject(new Error('X-Session-ID header is missing'));
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 instance.interceptors.response.use(
   (response) => response,
   (error) => {
