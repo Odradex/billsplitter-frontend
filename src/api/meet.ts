@@ -1,6 +1,6 @@
 import type { Debt } from '@/models/debt.model';
 import type { Meet } from '@/models/meet.model';
-import axios from "axios";
+import axios from './axios';
 
 export const getMeet = async (id: string): Promise<Meet> => {
   return { // Пока что заглушка, нужно будет заменить на реальный запрос
