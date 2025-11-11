@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import { MainButton } from "@/components/MainButton";
 import { ArrowLeft, Trash2 } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -18,6 +18,9 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { useMutation } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
+import { createMeet } from "@/api/meet";
 
 // Schema without members
 const MeetSchema = z.object({
@@ -35,13 +38,23 @@ function formatDate(date: Date): string {
   return date.toISOString().split("T")[0];
 }
 
-export function NewMeet() {
+export const NewMeet = () => {
+  const navigate = useNavigate();
+
   const form = useForm<MeetFormData>({
     resolver: zodResolver(MeetSchema),
     defaultValues: {
       name: "",
       date: new Date(Date.now()),
       members: [],
+    },
+  });
+
+  const createMeetMutation = useMutation({
+    mutationFn: createMeet,
+    onSuccess: (response: { id: number}) => {
+      navigate(`/meets/${response.id}`)
+      queryClient.invalidateQueries({ queryKey: ['meets'] });
     },
   });
 
@@ -64,7 +77,11 @@ export function NewMeet() {
   }
 
   function onSubmit(values: MeetFormData) {
-    alert(JSON.stringify(values, null, 2));
+    createMeetMutation.mutate({
+      name: values.name,
+      date: values.date.toISOString(),
+      members: values.members,
+    });
   }
 
   return (
