@@ -150,7 +150,6 @@ export const NewMeet = () => {
                 <FormItem>
                   <FormControl>
                     <Input
-                      placeholder="Добавь участников"
                       onKeyDown={(e) => {
                         if (e.key === "Enter" && e.currentTarget.value.trim()) {
                           e.preventDefault();
