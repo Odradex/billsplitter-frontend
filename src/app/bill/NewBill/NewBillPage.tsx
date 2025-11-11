@@ -1,5 +1,5 @@
 
-import { getMeet } from "@/api/meet";
+import { getMeet, createBill } from "@/api/meet";
 import Header from "@/components/Header"
 import { MainButton } from "@/components/MainButton";
 
@@ -13,10 +13,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react"
 import { useForm } from "react-hook-form";
-import { Link, useParams } from "react-router"
+import { Link, useParams, useNavigate } from "react-router"
 import z from "zod";
 import { BillMemberSelector } from "./BillMemberSelector";
 import { BillImageUploader } from "./BillImageUploader";
@@ -26,6 +26,7 @@ const BillSchema = z.object({
   amount: z.number().min(0.01, "Сумма должна быть больше 0"),
   images: z.array(z.instanceof(File)).optional(),
   members: z.array(z.object({
+    id: z.number(),
     name: z.string().min(1, "Имя участника не может быть пустым"),
     amount: z.number().min(0, "Сумма должна быть положительной"),
   })).min(1, "Выберите участников"),
@@ -44,11 +45,24 @@ export type BillFormData = z.infer<typeof BillSchema>;
 
 export const NewBill = () => {
   const { meetId } = useParams<{ meetId: string }>();
+  const navigate = useNavigate();
 
   const { data: meet, isLoading } = useQuery({
     queryKey: ['meet', meetId],
     queryFn: () => getMeet(meetId!),
     enabled: !!meetId,
+  });
+
+  const createBillMutation = useMutation({
+    mutationFn: createBill,
+    onSuccess: () => {
+      // Redirect to meet details page after successful creation
+      navigate(`/meet/${meetId}`);
+    },
+    onError: (error: any) => {
+      console.error('Error creating bill:', error);
+      // You can add toast notification here
+    },
   });
 
   const form = useForm<BillFormData>({
@@ -60,6 +74,18 @@ export const NewBill = () => {
       images: [],
     },
   });
+
+  const onSubmit = (data: BillFormData) => {
+    if (!meetId) return;
+    
+    createBillMutation.mutate({
+      meetId,
+      name: data.name,
+      amount: data.amount,
+      members: data.members,
+      images: data.images,
+    });
+  };
 
   if (isLoading || !meet) {
     return null;
@@ -77,6 +103,7 @@ export const NewBill = () => {
       <Form {...form}>
         <form
           className="mt-20 mb-24 p-4 space-y-6"
+          onSubmit={form.handleSubmit(onSubmit)}
         >
           <div className="space-y-5">
             <FormField
@@ -150,7 +177,9 @@ export const NewBill = () => {
           </div>
           
           <div className="pt-4">
-            <MainButton type="submit">Готово</MainButton>
+            <MainButton type="submit" disabled={createBillMutation.isPending}>
+              {createBillMutation.isPending ? 'Создание...' : 'Готово'}
+            </MainButton>
           </div>
         </form>
       </Form>

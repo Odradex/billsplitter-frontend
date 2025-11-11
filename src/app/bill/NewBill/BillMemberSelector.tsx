@@ -5,14 +5,16 @@ import { Button } from '@/components/ui/button';
 import type { UseFormReturn } from 'react-hook-form';
 import type { BillFormData } from './NewBillPage';
 import { Calculator } from 'lucide-react';
+import type { MeetMember } from '@/models/meet.model';
 
 export type Member = {
+  id: number;
   name: string;
   amount: number;
 };
 
 interface BillMemberSelectorProps {
-  meetMembers: string[];
+  meetMembers: MeetMember[];
   billAmount: number;
   form: UseFormReturn<BillFormData>;
 }
@@ -126,25 +128,25 @@ export const BillMemberSelector = ({ meetMembers, billAmount, form }: BillMember
       
       {/* Unselected meet members */}
       {meetMembers
-        .filter(m => !members.some((sel: { name: string }) => sel.name === m))
+        .filter(m => !members.some(sel => sel.id === m.id))
         .length > 0 && (
         <div className="space-y-2">
           <div className="text-sm font-medium text-gray-600 mt-4">Добавить участников:</div>
           {meetMembers
-            .filter(m => !members.some((sel: { name: string }) => sel.name === m))
-            .map((m: string) => (
+            .filter(m => !members.some(sel => sel.id === m.id))
+            .map((m) => (
               <Card
-                key={m}
+                key={m.id}
                 className="p-4 bg-white border border-gray-200 hover:border-primary hover:bg-primary/5 cursor-pointer transition-all shadow-sm hover:shadow"
                 onClick={() => {
                   const updatedMembers = [
                     ...members,
-                    { name: m, amount: 0 }
+                    { id: m.id, name: m.name, amount: 0 }
                   ];
                   form.setValue('members', updatedMembers);
                 }}
               >
-                <span className="text-base font-medium text-gray-700">{m}</span>
+                <span className="text-base font-medium text-gray-700">{m.name}</span>
               </Card>
             ))}
         </div>
