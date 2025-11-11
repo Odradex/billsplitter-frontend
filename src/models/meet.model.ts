@@ -1,5 +1,5 @@
 export type Meet = {
-  id: string;
+  ID: string;
   name: string;
   date: string;
   members: string[];

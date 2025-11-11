@@ -1,16 +1,28 @@
 import type { Debt } from '@/models/debt.model';
 import type { Meet } from '@/models/meet.model';
-import axios from "axios";
+import axios from './axios'
+
+export const getMeets = async (): Promise<Meet[]> => {
+  const reponse = await axios.get('/meets');
+
+  return reponse.data;
+}
+
+type CreateMeetPayload = {
+  name: string;
+  date: string;
+  members: string[];
+}
+
+export const createMeet = async (payload: CreateMeetPayload): Promise<{id: number}> => {
+  const response = await axios.post('/meets', payload);
+
+  return response.data;
+}
 
 export const getMeet = async (id: string): Promise<Meet> => {
-  return { // Пока что заглушка, нужно будет заменить на реальный запрос
-    id: id,
-    name: `Покер`,
-    date: new Date().toLocaleDateString(),
-    members: ['Денис', 'Даник', 'Матвей', 'Кирилл'],
-  }
+  const response = await axios.get(`/meets/${id}`);
 
-  const response = await axios.get(`/meet/${id}`);
   return response.data;
 }
 
