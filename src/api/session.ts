@@ -1,7 +1,7 @@
 import axios from './axios';
 
 export type Session = {
-  UserInfo: {
+  userInfo: {
     ID?: number | string;
     Username?: string;
     FirstName?: string;

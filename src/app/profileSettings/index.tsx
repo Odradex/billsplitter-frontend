@@ -13,9 +13,9 @@ import { useState } from "react";
 export default function ProfilePage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { session: { UserInfo } } = useSession();
+  const { session: { userInfo } } = useSession();
 
-  const userName = UserInfo?.FirstName;
+  const userName = userInfo?.FirstName;
 
   const { data: paymentMethods = [], isLoading } = useQuery({
     queryKey: ['paymentMethods'],

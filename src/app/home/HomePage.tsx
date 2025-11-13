@@ -43,7 +43,7 @@ export function HomePage() {
       <h1 className="text-3xl font-bold">Билсплиттер</h1>
 
       <div className="flex gap-4 h-24">
-       <SettingsBanner userName={session?.UserInfo?.Username} />
+       <SettingsBanner userName={session?.userInfo?.Username} />
       </div>
 
       <div>

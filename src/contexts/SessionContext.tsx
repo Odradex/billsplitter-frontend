@@ -28,7 +28,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
 
   // Fallback: guest session
   const defaultSession: SessionType = {
-    UserInfo: {
+    userInfo: {
       ID: '1',
       Username: 'DevUserName',
       FirstName: 'DevFirstName',
@@ -62,7 +62,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
         };
       }
     },
-    enabled: launchParams?.tgWebAppData?.user && !import.meta.env.VITE_MOCK_TG,
+    enabled: !import.meta.env.VITE_MOCK_TG,
     refetchOnWindowFocus: false,
   });
 
