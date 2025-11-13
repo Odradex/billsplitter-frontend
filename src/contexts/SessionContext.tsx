@@ -62,7 +62,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
         };
       }
     },
-    enabled: !!launchParams && !import.meta.env.VITE_MOCK_TG,
+    enabled: launchParams?.tgWebAppData?.user && !import.meta.env.VITE_MOCK_TG,
     refetchOnWindowFocus: false,
   });
 
