@@ -15,10 +15,16 @@ export const AXIOS_REQUEST_RETRIES = 3
 
 instance.interceptors.request.use(
   (config) => {
-    // Check for X-Session-ID in headers
-    if (!config.headers['X-Session-ID']) {
-      // Optionally, you can throw a custom error
-      return Promise.reject(new Error('X-Session-ID header is missing'));
+    // Allow requests without X-Session-ID (e.g., login/session endpoints)
+    // You can add specific paths that don't require session ID
+    const sessionNotRequired = ['/auth/login/telegram'].some(path =>
+      config.url?.includes(path)
+    );
+
+    if (!sessionNotRequired && !config.headers['X-Session-ID']) {
+      console.warn('⚠️ Request without X-Session-ID:', config.url);
+      // Optionally reject for non-auth endpoints
+      // return Promise.reject(new Error('X-Session-ID header is missing'));
     }
     return config;
   },
