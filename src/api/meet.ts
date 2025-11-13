@@ -14,7 +14,7 @@ type CreateMeetPayload = {
   members: string[];
 }
 
-export const createMeet = async (payload: CreateMeetPayload): Promise<{id: number}> => {
+export const createMeet = async (payload: CreateMeetPayload): Promise<{ID: number}> => {
   const response = await axios.post('/meets', payload);
 
   return response.data;

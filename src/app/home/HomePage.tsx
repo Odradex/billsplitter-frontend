@@ -17,6 +17,27 @@ export function HomePage() {
 
   const { session } = useSession();
 
+  const renderMeets = () => {
+    if (isLoading) {
+      return <div className="text-center text-muted-foreground">Загрузка...</div>;
+    }
+
+    if (meets.length === 0) {
+      return <div className="text-center text-muted-foreground">У тебя пока нет митов. Создай новый мит!</div>;
+    }
+
+    return meets.map((meet) => (
+      <Button
+        key={meet.ID}
+        variant="outline"
+        className="w-full h-14 justify-start font-medium"
+        onClick={() => navigate(`/meets/${meet.ID}`)}
+      >
+        {meet.name}
+      </Button>
+    ));
+  }
+
   return (
     <div className=" max-w-sm mx-auto space-y-4 mt-4 px-4">
       <h1 className="text-3xl font-bold">Билсплиттер</h1>
@@ -28,20 +49,7 @@ export function HomePage() {
       <div>
         <h2 className="mt-2 mb-2 text-2xl font-semibold">Твои миты:</h2>
         <div className="space-y-2 mb-30">
-          {isLoading ? (
-            <div className="text-center text-muted-foreground">Загрузка...</div>
-          ) : (
-            meets.map((meet) => (
-              <Button
-                key={meet.ID}
-                variant="outline"
-                className="w-full h-14 justify-start font-medium"
-                onClick={() => navigate(`/meets/${meet.ID}`)}
-              >
-                {meet.name}
-              </Button>
-            ))
-          )}
+          {renderMeets()}
         </div>
       </div>
 

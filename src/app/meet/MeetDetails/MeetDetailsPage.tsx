@@ -37,7 +37,7 @@ export const MeetDetails = () => {
 
       <hr className="m-4 border-t-2" />
 
-      <MeetDetailsBalanceList meetId={id!} />
+      <MeetDetailsBalanceList meet={meet} />
 
       <MainButton linkTo={`/meet/${id}/add-bill`}>
         <Plus className="!size-7"/>
