@@ -1,6 +1,7 @@
 import { getDebtsByMeetId } from "@/api/meet";
 import { Button } from "@/components/ui/button"
 import type { Debt } from "@/models/debt.model"
+import type { Meet } from "@/models/meet.model";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { useNavigate } from "react-router";
@@ -25,26 +26,20 @@ const Amount = ({ amount }: { amount: number }) => {
 };
 
 
-export const MeetDetailsBalanceList = ({ meetId }: { meetId: string }) => {
+export const MeetDetailsBalanceList = ({ meet }: { meet: Meet }) => {
   const navigate = useNavigate();
-
-  const { data: debts } = useQuery<Debt[]>({
-    queryKey: ['debts', meetId],
-    queryFn: () => getDebtsByMeetId(meetId),
-    enabled: !!meetId,
-  });
 
   return (
     <div className="space-y-2 mx-2">
-      {debts?.map((debt) => (
+      {meet?.members?.map((member) => (
         <Button
-          key={debt.id}
+          key={member.ID}
           variant="outline"
           className="w-full h-16 justify-start font-medium text-xl flex"
-          onClick={() => navigate(`/meet/${meetId}/member/${debt.memberInfo.id}`)}
+          onClick={() => navigate(`/meet/${meet.ID}/member/${member.ID}`)}
         >
-          {debt.memberInfo.name}
-          <Amount amount={debt.amount} />
+          {member.username}
+          <Amount amount={0} />
         </Button>
       ))}
     </div>

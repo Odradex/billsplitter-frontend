@@ -52,8 +52,8 @@ export const NewMeet = () => {
 
   const createMeetMutation = useMutation({
     mutationFn: createMeet,
-    onSuccess: (response: { id: number}) => {
-      navigate(`/meets/${response.id}`)
+    onSuccess: (response: { ID: number}) => {
+      navigate(`/meets/${response.ID}`)
       queryClient.invalidateQueries({ queryKey: ['meets'] });
     },
   });

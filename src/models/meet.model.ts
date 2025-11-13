@@ -1,6 +1,7 @@
 export type MeetMember = {
-  id: number;
+  ID: number;
   name: string;
+  username: string;
 };
 
 export type Meet = {
