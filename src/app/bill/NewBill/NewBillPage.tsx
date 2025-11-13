@@ -26,7 +26,7 @@ const BillSchema = z.object({
   amount: z.number().min(0.01, "Сумма должна быть больше 0"),
   images: z.array(z.instanceof(File)).optional(),
   members: z.array(z.object({
-    id: z.number(),
+    ID: z.number(),
     name: z.string().min(1, "Имя участника не может быть пустым"),
     amount: z.number().min(0, "Сумма должна быть положительной"),
   })).min(1, "Выберите участников"),

@@ -72,7 +72,7 @@ export interface CreateBillData {
   name: string;
   amount: number;
   members: Array<{
-    id: number;
+    ID: number;
     name: string;
     amount: number;
   }>;
@@ -85,7 +85,7 @@ export const createBill = async (data: CreateBillData): Promise<void> => {
     name: data.name,
     total_amount: data.amount,
     participants: data.members.map(member => ({
-      user_id: member.id,
+      user_id: member.ID,
       amount: member.amount,
     })),
   });

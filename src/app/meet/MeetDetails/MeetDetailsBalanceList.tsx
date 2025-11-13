@@ -1,8 +1,5 @@
-import { getDebtsByMeetId } from "@/api/meet";
 import { Button } from "@/components/ui/button"
-import type { Debt } from "@/models/debt.model"
 import type { Meet } from "@/models/meet.model";
-import { useQuery } from "@tanstack/react-query";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { useNavigate } from "react-router";
 

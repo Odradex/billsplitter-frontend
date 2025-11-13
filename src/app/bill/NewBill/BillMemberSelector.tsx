@@ -128,20 +128,20 @@ export const BillMemberSelector = ({ meetMembers, billAmount, form }: BillMember
       
       {/* Unselected meet members */}
       {meetMembers
-        .filter(m => !members.some(sel => sel.id === m.id))
+        .filter(m => !members.some(sel => sel.ID === m.ID))
         .length > 0 && (
         <div className="space-y-2">
           <div className="text-sm font-medium text-gray-600 mt-4">Добавить участников:</div>
           {meetMembers
-            .filter(m => !members.some(sel => sel.id === m.id))
+            .filter(m => !members.some(sel => sel.ID === m.ID))
             .map((m) => (
               <Card
-                key={m.id}
+                key={m.ID}
                 className="p-4 bg-white border border-gray-200 hover:border-primary hover:bg-primary/5 cursor-pointer transition-all shadow-sm hover:shadow"
                 onClick={() => {
                   const updatedMembers = [
                     ...members,
-                    { id: m.id, name: m.name, amount: 0 }
+                    { ID: m.ID, name: m.name, amount: 0 }
                   ];
                   form.setValue('members', updatedMembers);
                 }}
