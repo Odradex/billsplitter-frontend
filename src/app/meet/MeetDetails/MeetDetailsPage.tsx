@@ -21,12 +21,16 @@ export const MeetDetails = () => {
     queryKey: ['meet', id],
     queryFn: () => getMeet(id!),
     enabled: !!id,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
   });
 
   const { data: summary, isLoading: summaryLoading } = useQuery({
     queryKey: ['meet-summary', id],
     queryFn: () => getMeetSummary(id!),
     enabled: !!id,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
   });
 
   if (isLoading || !meet || summaryLoading) {
@@ -38,7 +42,7 @@ export const MeetDetails = () => {
   };
 
   return (
-    <div>
+    <div className="pb-32">
       <MeetDetailsHeader {...meet} />
 
       <div className="flex gap-4 mt-26 m-2">
