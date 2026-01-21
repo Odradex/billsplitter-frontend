@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button"
 import type { Meet } from "@/models/meet.model";
+import type { MeetSummary } from "@/api/summary";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { useNavigate } from "react-router";
 
@@ -23,22 +24,27 @@ const Amount = ({ amount }: { amount: number }) => {
 };
 
 
-export const MeetDetailsBalanceList = ({ meet }: { meet: Meet }) => {
+export const MeetDetailsBalanceList = ({ meet, summary }: { meet: Meet; summary?: MeetSummary }) => {
   const navigate = useNavigate();
 
   return (
     <div className="space-y-2 mx-2">
-      {meet?.members?.map((member) => (
-        <Button
-          key={member.ID}
-          variant="outline"
-          className="w-full h-16 justify-start font-medium text-xl flex"
-          onClick={() => navigate(`/meet/${meet.ID}/member/${member.ID}`)}
-        >
-          {member.username}
-          <Amount amount={0} />
-        </Button>
-      ))}
+      {meet?.members?.map((member) => {
+        const memberBalance = summary?.balances?.find(b => b.member_id === member.ID);
+        const balance = memberBalance?.balance ?? 0;
+
+        return (
+          <Button
+            key={member.ID}
+            variant="outline"
+            className="w-full h-16 justify-start font-medium text-xl flex"
+            onClick={() => navigate(`/meet/${meet.ID}/member/${member.ID}`)}
+          >
+            {member.username}
+            <Amount amount={balance} />
+          </Button>
+        );
+      })}
     </div>
   )
 }
