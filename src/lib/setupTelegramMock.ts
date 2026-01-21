@@ -1,6 +1,7 @@
 import { mockTelegramEnv } from "@telegram-apps/sdk-react";
 
 export const setupTelegramMock = () => {
+  return;
   if (!import.meta.env.DEV || !import.meta.env.VITE_MOCK_TG ) return;
 
   const mockUser = {

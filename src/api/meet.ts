@@ -71,6 +71,9 @@ export interface CreateBillData {
   meetId: string;
   name: string;
   amount: number;
+  paidBy: number;
+  currency?: string;
+  splitType?: string;
   members: Array<{
     ID: number;
     name: string;
@@ -80,14 +83,20 @@ export interface CreateBillData {
 }
 
 export const createBill = async (data: CreateBillData): Promise<void> => {
-  const response = await axios.post('/bill', {
+  // Convert amounts from decimal to integer (cents)
+  const totalAmountInCents = Math.round(data.amount * 100);
+  
+  const response = await axios.post('/bills', {
+    currency: data.currency || 'RUB',
     event_id: parseInt(data.meetId),
     name: data.name,
-    total_amount: data.amount,
+    paid_by: data.paidBy,
     participants: data.members.map(member => ({
-      user_id: member.ID,
-      amount: member.amount,
+      member_id: member.ID,
+      amount: Math.round(member.amount * 100), // Convert to cents
     })),
+    split_type: data.splitType || 'custom',
+    total_amount: totalAmountInCents
   });
   
   return response.data;

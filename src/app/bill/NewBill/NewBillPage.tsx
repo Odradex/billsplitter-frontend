@@ -19,11 +19,14 @@ import { useForm } from "react-hook-form";
 import { Link, useParams, useNavigate } from "react-router"
 import z from "zod";
 import { BillMemberSelector } from "./BillMemberSelector";
-import { BillImageUploader } from "./BillImageUploader";
+import { useSession } from "@/contexts/SessionContext";
+// import { BillImageUploader } from "./BillImageUploader";
 
 const BillSchema = z.object({
   name: z.string().min(1, "Название не может быть пустым").max(50),
   amount: z.number().min(0.01, "Сумма должна быть больше 0"),
+  currency: z.string().optional(),
+  splitType: z.string().optional(),
   images: z.array(z.instanceof(File)).optional(),
   members: z.array(z.object({
     ID: z.number(),
@@ -46,6 +49,7 @@ export type BillFormData = z.infer<typeof BillSchema>;
 export const NewBill = () => {
   const { meetId } = useParams<{ meetId: string }>();
   const navigate = useNavigate();
+  const { session } = useSession();
 
   const { data: meet, isLoading } = useQuery({
     queryKey: ['meet', meetId],
@@ -57,7 +61,7 @@ export const NewBill = () => {
     mutationFn: createBill,
     onSuccess: () => {
       // Redirect to meet details page after successful creation
-      navigate(`/meet/${meetId}`);
+      navigate(`/meets/${meetId}`);
     },
     onError: (error: any) => {
       console.error('Error creating bill:', error);
@@ -70,18 +74,31 @@ export const NewBill = () => {
     defaultValues: {
       name: "",
       amount: 0,
+      currency: "RUB",
+      splitType: "custom",
       members: [],
       images: [],
     },
   });
 
   const onSubmit = (data: BillFormData) => {
-    if (!meetId) return;
+    if (!meetId || !session.userInfo?.Username || !meet) return;
+    
+    // Find the current user's member ID from the meet members list
+    const currentUserMember = meet.members.find(m => m.username === session.userInfo!.Username);
+    
+    if (!currentUserMember) {
+      console.error('Current user not found in meet members');
+      return;
+    }
     
     createBillMutation.mutate({
       meetId,
       name: data.name,
       amount: data.amount,
+      paidBy: currentUserMember.ID,
+      currency: data.currency,
+      splitType: data.splitType,
       members: data.members,
       images: data.images,
     });
@@ -94,7 +111,7 @@ export const NewBill = () => {
   return (
     <>
       <Header>
-        <Link to={`/meet/${meetId}`} className="flex items-center gap-2">
+        <Link to={`/meets/${meetId}`} className="flex items-center gap-2">
           <ArrowLeft />
           Новый чек
         </Link>
@@ -153,7 +170,7 @@ export const NewBill = () => {
               )}
             />
             
-            <FormField
+            {/* <FormField
               control={form.control}
               name="images"
               render={({ field }) => (
@@ -168,7 +185,7 @@ export const NewBill = () => {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
           </div>
           
           <div className="pt-4">

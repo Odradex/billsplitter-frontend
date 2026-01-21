@@ -76,7 +76,7 @@ export const MeetDetails = () => {
         </>
       )}
 
-      <MainButton linkTo={`/meet/${id}/add-bill`}>
+      <MainButton linkTo={`/meets/${id}/add-bill`}>
         <Plus className="!size-7"/>
         Добавить чек
       </MainButton>

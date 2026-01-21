@@ -92,7 +92,7 @@ export const BillMemberSelector = ({ meetMembers, billAmount, form }: BillMember
         <div className="space-y-3">
           {members.map((member, idx) => (
             <Card
-              key={member.name}
+              key={member.ID}
               className="p-4 bg-primary/5 border-2 border-primary shadow-sm hover:shadow-md transition-shadow cursor-pointer"
               onClick={() => {
                 const updated = members.filter((_, i) => i !== idx);
@@ -141,12 +141,12 @@ export const BillMemberSelector = ({ meetMembers, billAmount, form }: BillMember
                 onClick={() => {
                   const updatedMembers = [
                     ...members,
-                    { ID: m.ID, name: m.name, amount: 0 }
+                    { ID: m.ID, name: m.username, amount: 0 }
                   ];
                   form.setValue('members', updatedMembers);
                 }}
               >
-                <span className="text-base font-medium text-gray-700">{m.name}</span>
+                <span className="text-base font-medium text-gray-700">{m.username}</span>
               </Card>
             ))}
         </div>

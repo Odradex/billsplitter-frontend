@@ -2,7 +2,7 @@ import { QueryClient, QueryCache, MutationCache } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 const handleError = (error: unknown) => {
-  let errorMessage = 'Что-то пошло не так';
+  const errorMessage = 'Что-то пошло не так';
 
   // if (error instanceof Error) {
   //   errorMessage = error.message;
