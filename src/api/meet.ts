@@ -26,6 +26,38 @@ export const getMeet = async (id: string): Promise<Meet> => {
   return response.data;
 }
 
+export type InviteMeetMember = {
+  ID: number;
+  user_id: number | null;
+  username: string;
+};
+
+export type InviteMeet = {
+  ID: number;
+  created_at: string;
+  created_by_user_id: number;
+  deleted_at: string | null;
+  event_date: string;
+  members: InviteMeetMember[];
+  name: string;
+  public_uuid: string;
+  status: string;
+  type: string;
+  updated_at: string;
+};
+
+export const getMeetByInvite = async (uuid: string): Promise<InviteMeet> => {
+  const response = await axios.get(`/meets/invite/${uuid}`);
+  return response.data;
+};
+
+export const assignUserToMember = async (meetId: number, memberId: number): Promise<void> => {
+  const response = await axios.put(`/meets/${meetId}/assign`, {
+    member_id: memberId,
+  });
+  return response.data;
+};
+
 export const getDebtsByMeetId = async (meetId: string): Promise<Debt[]> => {
   // Здесь должен быть реальный запрос к API для получения долгов по meetId
   return [

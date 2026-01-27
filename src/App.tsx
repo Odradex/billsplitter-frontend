@@ -5,6 +5,7 @@ import { NewMeet } from "./app/meet/NewMeetPage"
 import ProfilePage from "./app/profileSettings"
 import { MeetDetails } from "./app/meet/MeetDetails/MeetDetailsPage"
 import { NewBill } from "./app/bill/NewBill/NewBillPage"
+import { MeetInvitePage } from "./app/meet/MeetInvitePage"
  
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route index element={<HomePage />} />
         <Route path='meets'>
           <Route path="new" element={<NewMeet />} />
+          <Route path="invite/:uuid" element={<MeetInvitePage />} />
           <Route path=":id" element={<MeetDetails />} />
           <Route path=":meetId/add-bill" element={<NewBill />} />
         </Route>
