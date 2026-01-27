@@ -25,6 +25,7 @@ import { useSession } from "@/contexts/SessionContext";
 const BillSchema = z.object({
   name: z.string().min(1, "Название не может быть пустым").max(50),
   amount: z.number().min(0.01, "Сумма должна быть больше 0"),
+  paidBy: z.number().min(1, "Выберите плательщика"),
   currency: z.string().optional(),
   splitType: z.string().optional(),
   images: z.array(z.instanceof(File)).optional(),
@@ -74,6 +75,7 @@ export const NewBill = () => {
     defaultValues: {
       name: "",
       amount: 0,
+      paidBy: meet?.members.find(m => m.username === session.userInfo?.Username)?.ID || 0,
       currency: "RUB",
       splitType: "custom",
       members: [],
@@ -82,21 +84,13 @@ export const NewBill = () => {
   });
 
   const onSubmit = (data: BillFormData) => {
-    if (!meetId || !session.userInfo?.Username || !meet) return;
-    
-    // Find the current user's member ID from the meet members list
-    const currentUserMember = meet.members.find(m => m.username === session.userInfo!.Username);
-    
-    if (!currentUserMember) {
-      console.error('Current user not found in meet members');
-      return;
-    }
+    if (!meetId || !meet) return;
     
     createBillMutation.mutate({
       meetId,
       name: data.name,
       amount: data.amount,
-      paidBy: currentUserMember.ID,
+      paidBy: data.paidBy,
       currency: data.currency,
       splitType: data.splitType,
       members: data.members,
@@ -164,6 +158,31 @@ export const NewBill = () => {
                       />
                       <span className="absolute right-4 top-1/2 -translate-y-1/2 text-2xl font-semibold text-gray-500">₽</span>
                     </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="paidBy"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base font-semibold text-gray-700">Кто оплатил</FormLabel>
+                  <FormControl>
+                    <select
+                      {...field}
+                      className="w-full text-lg py-3 px-4 border-2 rounded-md focus:ring-2 focus:ring-primary focus:outline-none bg-white"
+                      onChange={e => field.onChange(parseInt(e.target.value))}
+                    >
+                      <option value="0" disabled>Выберите плательщика</option>
+                      {meet.members.map(member => (
+                        <option key={member.ID} value={member.ID}>
+                          {member.username}
+                        </option>
+                      ))}
+                    </select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

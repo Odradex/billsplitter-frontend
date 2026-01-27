@@ -8,7 +8,7 @@ export const MeetDetailsHeader = (meet: Meet) => {
   const [showNotification, setShowNotification] = useState(false);
 
   const handleShareClick = () => {
-    const link = `${window.location.origin}/meets/invite/${meet.public_uuid}`;
+    const link = `t.me/bill_splitter_ru_bot/app?startapp=${meet.public_uuid}`;
     navigator.clipboard.writeText(link);
     setShowNotification(true);
     setTimeout(() => setShowNotification(false), 2000);
