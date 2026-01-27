@@ -9,4 +9,5 @@ export type Meet = {
   name: string;
   date: string;
   members: MeetMember[];
+  public_uuid: string;
 };
